@@ -1,0 +1,3 @@
+.ipynb_checkpoints/*
+.__pycache__
+nns_rpy2/__pycache__/*
