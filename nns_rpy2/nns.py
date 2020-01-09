@@ -1,4 +1,4 @@
-from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin, ClusterMixin
 from rpy2 import robjects
 from rpy2.robjects.packages import importr
 import rpy2.robjects.numpy2ri
@@ -52,7 +52,7 @@ class NNSRPY2Estimator(BaseEstimator):
     def _retnull(self, value):
         if value is None:
             return robjects.NULL
-        elif type(value):
+        elif type(value) is bool:
             return robjects.vectors.BoolVector([False])
         return value
 
@@ -95,7 +95,7 @@ class NNSRPY2Estimator(BaseEstimator):
 
     def predict(self, X, y=None):
         if not hasattr(self, "r_NNS_"):
-            raise RuntimeError("You must train classifer before predicting data!")
+            raise RuntimeError("You must train estimator before predicting data!")
         params = self._nns_get_parameters(True)
         params['point_est'] = X
         ret = self.r_NNS_.NNS_reg(self.X_, self.y_, **params)
@@ -106,17 +106,57 @@ class NNSRPY2Estimator(BaseEstimator):
 
 
 class NNSRPY2Classifier(NNSRPY2Estimator, ClassifierMixin):
-    pass
+    def __init__(self, **kwargs):
+        kwargs['type'] = "CLASS"
+        super().__init__(**kwargs)
+
+    def predict_proba(self, X, y=None):
+        # No not flor classification
+        # Could run reg regression on it however
+        # 0,1 classes like logistic regression works with type = NULL
+        # Set type = NULL and noise.reduction = “mode”
+        error, ret = None, None
+        old_type, old_noise_reduction = self.type, self.noise_reduction
+        try:
+            self.type = None
+            self.noise_reduction = "mode"
+            ret = np.clip(self.predict(X, y), 0, 1)     # clip >=0, <=1
+        except Exception as e:
+            error = e
+        # set back to original value
+        self.type, self.noise_reduction = old_type, old_noise_reduction
+        if error is not None:
+            raise error
+        return ret
 
 
 class NNSRPY2Regressor(NNSRPY2Estimator, RegressorMixin):
-    pass
+    def __init__(self, **kwargs):
+        kwargs['type'] = None
+        super().__init__(**kwargs)
 
 
-# if __name__ == '__main__':
-#    model = NNSRPY2Classifier()
-#    x = np.array([1, 2, 3, 4])
-#    x_new = x + 1
-#    y = x ** 3
-#    model.fit(x, y)
-#    print(model.predict(x_new))
+# TODO: check if we could export a cluster class (unsupervised algorithm)
+class NNSRPY2Clusterer(NNSRPY2Estimator, ClusterMixin):
+    def predict(self, X, y=None):
+        if not hasattr(self, "r_NNS_"):
+            raise RuntimeError("You must train estimator before predicting data!")
+        params = self._nns_get_parameters(True)
+        params['point_est'] = X
+        ret = self.r_NNS_.NNS_reg(self.X_, self.y_, **params)
+        for i in range(len(ret.names)):
+            if ret.names[i] == 'Point.est.NNS.ID':     ## !! should return the NNS.ID of the Point.est value !!
+                return np.array(ret[i])
+        raise RuntimeError("Can't find return Point.est.NNS.ID value")
+
+
+if __name__ == '__main__':
+    model = NNSRPY2Clusterer()
+    x = np.array([1, 2, 3, 4])
+    x_new = x + 1
+    y = x ** 3
+    y_new = x_new + 1
+    model.fit(x, y)
+    print(model.predict(x, y))
+
+
