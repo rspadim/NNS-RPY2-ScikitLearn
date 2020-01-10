@@ -1,3 +1,6 @@
 .ipynb_checkpoints/*
 .__pycache__
 nns_rpy2/__pycache__/*
+NNS_RPY2_ScikitLearn.egg-info/
+dist/
+
