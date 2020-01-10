@@ -150,13 +150,13 @@ class NNSRPY2Clusterer(NNSRPY2Estimator, ClusterMixin):
         raise RuntimeError("Can't find return Point.est.NNS.ID value")
 
 
-if __name__ == '__main__':
-    model = NNSRPY2Clusterer()
-    x = np.array([1, 2, 3, 4])
-    x_new = x + 1
-    y = x ** 3
-    y_new = x_new + 1
-    model.fit(x, y)
-    print(model.predict(x, y))
+#if __name__ == '__main__':
+#    model = NNSRPY2Clusterer()
+#    x = np.array([1, 2, 3, 4])
+#    x_new = x + 1
+#    y = x ** 3
+#    y_new = x_new + 1
+#    model.fit(x, y)
+#    print(model.predict(x, y))
 
 
