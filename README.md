@@ -1,7 +1,7 @@
 NNS-RPY2-ScikitLearn
 ============
 NNS RPY2  is a python package (pipy) that create a Scikit-Learn interface to 
-NNS library (developed in R) with RPY2 package.
+NNS library (NNS: Nonlinear Nonparametric Statistics, developed in R) with RPY2 package.
 
 This project is a beta version, classifier and regressor classes are exported 
 to user.
