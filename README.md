@@ -31,6 +31,22 @@ NNS-RPY2-ScikitLearn requires:
 - NumPy (>= 1.13.3)
 
 
+Example
+-------
+
+Python code:
+
+```{python}
+from nns_rpy2 import NNSRPY2Regressor
+model = NNSRPY2Regressor()
+x = np.array([1, 2, 3, 4])
+x_new = x + 1
+y = x ** 3
+model.fit(x, y)
+print(model.predict(x_new))
+```
+
+
 Contribuiton
 ------------
 
