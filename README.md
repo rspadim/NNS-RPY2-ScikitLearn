@@ -11,7 +11,7 @@ A second step is export all NNS functions to python world.
 A last step is port the NNS R code to python, checking if Cython could 
 help with performace and reduce the memory when copying data from python to R
 
-More about NNS: https://cran.r-project.org/package=NNS
+More about NNS: https://cran.r-project.org/package=NNS , https://github.com/OVVO-Financial/NNS
 
 Installation
 ------------
